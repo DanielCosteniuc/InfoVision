@@ -1,0 +1,156 @@
+.powerpoint-container {
+  padding: 20px;
+  background-color: #f4f4f7;
+  width: 90%;
+  height: auto;
+  margin: 0 auto;
+  position: relative;
+}
+
+.powerpoint-container .back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff7f0e;
+  transition: color 0.3s;
+}
+
+.powerpoint-container .back-button:hover {
+  color: #cc6600;
+}
+
+.powerpoint-container .title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #ff7f0e;
+}
+
+.powerpoint-container .open-powerpoint-button {
+  width: calc(100% - 200px);
+  margin: 20px auto;
+  height: 100px; /* Dublăm înălțimea */
+  background-color: #ff7f0e;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block;
+  text-align: center;
+  line-height: 100px; 
+}
+
+.powerpoint-container .open-powerpoint-button:hover {
+  background-color: #cc6600;
+}
+
+.powerpoint-container .button-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto;
+  gap: 10px;
+  justify-items: center;
+  align-items: center;
+}
+
+.powerpoint-container .button {
+  font-size: 14px;
+  color: #fff;
+  background-color: #ff7f0e;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 40px; 
+}
+
+.powerpoint-container .button:hover {
+  background-color: #cc6600;
+}
+
+.powerpoint-container .activate-powerpoint-button {
+  grid-column: 1 / 4; 
+  height: 60px;
+  font-size: 16px;
+}
+
+.powerpoint-container .save-presentation-button {
+  grid-column: 4 / 7; 
+  height: 60px;
+  font-size: 16px;
+}
+
+.powerpoint-container .add-slide-button {
+  grid-column: 1 / 2;
+}
+
+.powerpoint-container .delete-slide-button {
+  grid-column: 2 / 3;
+}
+
+.powerpoint-container .start-presentation-button {
+  grid-column: 3 / 4;
+}
+
+.powerpoint-container .stop-presentation-button {
+  grid-column: 4 / 5;
+}
+
+.powerpoint-container .previous-slide-button {
+  grid-column: 1 / 2;
+}
+
+.powerpoint-container .next-slide-button {
+  grid-column: 2 / 3;
+}
+
+.powerpoint-container .first-slide-button {
+  grid-column: 3 / 4;
+  height: 60px; 
+  margin-top: 40px;
+}
+
+.powerpoint-container .last-slide-button {
+  grid-column: 4 / 5;
+  height: 60px; 
+}
+
+.powerpoint-container .increase-volume-button {
+  grid-column: 3 / 4; 
+}
+
+.powerpoint-container .decrease-volume-button {
+  grid-column: 4 / 5; 
+}
+
+.powerpoint-container .close-powerpoint-button{
+  grid-column: 5/7;
+  background-color: red;
+}
+
+/* Media Queries pentru dispozitive mobile */
+@media (max-width: 768px) {
+  .powerpoint-container .button-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .powerpoint-container .button {
+    width: 100%;
+  }
+
+  .powerpoint-container .activate-powerpoint-button,
+  .powerpoint-container .save-presentation-button {
+    grid-column: 1 / -1;
+    height: auto;
+  }
+}

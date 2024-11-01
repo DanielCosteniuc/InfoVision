@@ -1,0 +1,107 @@
+/* Container de bază pentru componentă */
+.skype-container {
+  padding: 20px;
+  background-color: #f4f4f7;
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+/* Stil pentru titlul aplicației */
+.title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #0078D7;
+}
+
+/* Stil de bază pentru butoane */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #0078D7;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+  height: 100%;
+}
+
+.button:hover {
+  background-color: #005a9e;
+}
+
+/* Stil pentru butoanele active */
+.button.active {
+  background-color: #004080;
+}
+
+/* Container pentru prima linie de butoane */
+.button-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 coloane egale */
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Container pentru grupuri de butoane din secțiunea "Chats" */
+.button-group.chats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Prima linie cu 4 coloane egale */
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* A doua linie din secțiunea "Chats" */
+.button-group.chats .second-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 coloane egale */
+  gap: 10px;
+  margin-top: 10px;
+}
+.button-group.chats .video-call-button {
+  grid-column: 1 / 2; /* Începe la coloana 1 și se termină la coloana 2 */
+  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
+}
+.button-group.chats .audio-call-button {
+  grid-column: 2 / 3; /* Începe la coloana 1 și se termină la coloana 2 */
+  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
+}
+
+.button-group.chats .audio-call-button {
+  grid-column: 3 / 4; /* Începe la coloana 1 și se termină la coloana 2 */
+  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
+}
+.button-group.chats .audio-call-button {
+  grid-column: 4 / 5; /* Începe la coloana 1 și se termină la coloana 2 */
+  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
+}
+
+
+/* Container pentru grupuri de butoane din secțiunea "Contacts" */
+.button-group.contacts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 coloane egale */
+  gap: 10px;
+}
+
+/* Stiluri pentru fiecare buton din grilă */
+.button-group .button {
+  width: auto;
+}
+
+
+/* Stiluri pentru mesajele de eroare */
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+}

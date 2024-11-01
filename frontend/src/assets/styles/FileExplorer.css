@@ -1,0 +1,112 @@
+.file-explorer-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: sticky;
+  top: 0;
+  background-color: #f9f9f9;
+  z-index: 10;
+  padding: 10px 0;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+  color: #007bff;
+  transition: color 0.3s;
+  font-size: 18px;
+}
+
+.icon-button:hover {
+  color: #0056b3;
+}
+
+.breadcrumb {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 15px;
+}
+
+.file-list {
+  flex-grow: 1;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.file-entries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-entry {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background-color: white;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  justify-content: space-between; 
+}
+
+.file-entry:hover {
+  background-color: #e8f0fe;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.file-name {
+  flex: 2;
+  text-align: left; 
+}
+
+.download-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.download-icon {
+  cursor: pointer;
+  color: #007bff;
+  margin: 0;
+  padding: 0;
+}
+
+.download-icon:hover {
+  color: #0056b3;
+}
+
+.file-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.file-type {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; 
+}
+
+.alt-text {
+  margin-right: 20px; 
+  font-size: 12px;
+}

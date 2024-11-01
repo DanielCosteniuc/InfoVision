@@ -1,0 +1,118 @@
+.choose-shortcut-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+}
+
+.choose-shortcut-title {
+  font-size: 44px; 
+  color: #022d58; 
+  text-align: center; 
+}
+
+/* Container pentru sidebar */
+.sidebar-container {
+  display: flex;
+  height: 100vh; 
+}
+
+/* Stiluri pentru sidebar */
+.sidebar {
+  width: 100%; 
+  max-width: 200px; 
+  background-color: #0061ac;
+  color: #e0f7fa;
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
+  position: fixed;
+}
+
+/* Headerul sidebar-ului */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  margin-bottom: 20px;
+}
+
+/* Stiluri pentru titlul din sidebar */
+.sidebar-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e0f7fa;
+  margin: 0;
+  margin-left: -10px; 
+  margin-top: 0px;
+}
+
+/* Stiluri pentru logo */
+.logo-icon {
+  width: 70px; 
+  height: auto;
+}
+
+/* Stiluri pentru butoanele din sidebar */
+.sidebar-button {
+  background: none;
+  border: none;
+  color: #f1eeee; 
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Stiluri pentru iconițele din butoane */
+.sidebar-button .icon {
+  width: 22px; 
+  height: 22px; 
+  margin-right: 10px;
+}
+
+/* Stiluri pentru hover pe butoanele din sidebar */
+.sidebar-button:hover {
+  background-color: #20578e;
+}
+
+/* Stiluri pentru secțiunea de conținut */
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 220px; 
+  background-color: #f0f0f0;
+  overflow-y: auto;
+  height: 100vh; 
+}
+
+/* Reguli media pentru dispozitive mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    position: auto;
+    height: auto; 
+    max-width: 100%; 
+    overflow-y: auto; 
+  }
+
+  .content {
+    margin-left: 0; 
+    padding-top: 20px; 
+    overflow-y: auto; 
+    height: auto; 
+  }
+}
+/* Stiluri pentru secțiunea de copyright */
+.copyright {
+  margin-top: auto;
+  margin-bottom: 20px;
+  font-size: 12px;
+  text-align: center;
+  color: #e0f7fa;
+  
+}

@@ -1,0 +1,74 @@
+/* Stiluri pentru containerul touchpad */
+.touchpad-container {
+  width: 60vw; /* Ocupă 60% din lățimea vizibilă a ecranului */
+  height: 60vh; /* Ocupă 60% din înălțimea vizibilă a ecranului */
+  background-color: #dcdcdc; /* Culoare de fundal gri deschis */
+  border: 2px solid #b0b0b0; /* Bordură subtile */
+  border-radius: 10px; /* Colțuri rotunjite */
+  display: flex; /* Flexbox pentru centrare */
+  flex-direction: column; /* Elemente dispuse vertical */
+  justify-content: center; /* Aliniere pe axa verticală */
+  align-items: center; /* Aliniere pe axa orizontală */
+  touch-action: none; /* Dezactivează comportamentele implicite (scroll, zoom) */
+  user-select: none; /* Dezactivează selecția textului */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+}
+
+/* Stiluri pentru titlu și paragrafe din touchpad */
+.touchpad-container h2 {
+  margin: 10px 0;
+  font-size: 1.5rem; /* Dimensiune text mai mare */
+  color: #333; /* Culoare text mai întunecată */
+}
+
+.touchpad-container p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #666; /* Culoare text gri închis */
+}
+
+/* Stiluri pentru butonul de deschidere/închidere tastatură */
+/* Stiluri pentru butonul de deschidere/închidere tastatură */
+.keyboard-toggle {
+  position: relative; /* Permite repoziționarea față de alte elemente */
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #007bff; /* Albastru */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer; /* Cursor pointer */
+  transition: background-color 0.3s ease; /* Tranziție lină pentru hover */
+  left: 40%;
+  
+  display: flex;  /* Flexbox pentru aliniere */
+  justify-content: center;  /* Centrare pe axa orizontală */
+  align-items: center;  /* Centrare pe axa verticală */
+}
+
+/* Schimbare stil la hover */
+.keyboard-toggle:hover {
+  background-color: #0056b3; /* Culoare mai închisă la hover */
+}
+
+/* Schimbare stil când este apăsat */
+.keyboard-toggle:active {
+  background-color: #004080; /* Culoare și mai închisă la click */
+}
+
+/* Stil pentru textarea ascuns */
+.hidden-textarea {
+  opacity: 0;
+  position: absolute;
+  left: -9999px; /* Scoate textarea din viewport */
+}
+
+/* Stiluri pentru butonul când tastatura este deschisă */
+.keyboard-open {
+  position: absolute;
+  bottom: 10px; /* Îl poziționează deasupra tastaturii */
+  left: 50%;
+  transform: translateX(-50%);
+}

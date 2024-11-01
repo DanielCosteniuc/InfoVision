@@ -1,0 +1,194 @@
+.microsoft-excel-container {
+  padding: 20px;
+  background-color: #f4f4f7;
+  width: 90%;
+  height: auto;
+  margin: 0 auto;
+  position: relative;
+}
+
+.microsoft-excel-container .back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #218838;
+  transition: color 0.3s;
+}
+
+.microsoft-excel-container .back-button:hover {
+  color: #1a5e2c;
+}
+
+.microsoft-excel-container .title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #218838;
+}
+
+.microsoft-excel-container .open-excel-button {
+  width: calc(100% - 200px);
+  margin: 20px auto;
+  height: 50px;
+  background-color: #218838;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block;
+  text-align: center;
+}
+
+.microsoft-excel-container .open-excel-button:hover {
+  background-color: #1a5e2c;
+}
+
+.microsoft-excel-container .button-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 80px 60px 60px;
+  gap: 10px;
+  justify-items: center;
+  align-items: center;
+}
+
+.microsoft-excel-container .button {
+  padding: 10px 25px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #218838;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.microsoft-excel-container .button:hover {
+  background-color: #1a5e2c;
+}
+
+.microsoft-excel-container .activate-excel-button {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  height: 140px;
+}
+
+.microsoft-excel-container .prev-sheet-button {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  height: 65px;
+}
+
+.microsoft-excel-container .add-sheet-button {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  height: 60px;
+  margin-top: -10px;
+}
+
+.microsoft-excel-container .next-sheet-button {
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
+  height: 65px;
+}
+
+.microsoft-excel-container .delete-sheet-button {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+  height: 60px;
+  margin-top: -10px;
+}
+
+.microsoft-excel-container .save-excel-button {
+  grid-column: 4 / 5;
+  grid-row: 1 / 2;
+  height: 65px;
+}
+
+.microsoft-excel-container .close-excel-button{
+  background-color: #cc0000;
+  grid-column: 4 / 5;
+  grid-row: 2 / 3;
+  height: 60px;
+  margin-top: -10px;
+}
+
+.microsoft-excel-container .confirmation-dialog {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+  margin-top: -60px;
+}
+
+.microsoft-excel-container .confirmation-dialog p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.microsoft-excel-container .confirmation-dialog .confirm-button,
+.microsoft-excel-container .confirmation-dialog .cancel-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #218838;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.microsoft-excel-container .confirmation-dialog .confirm-button {
+  background-color: #218838;
+}
+
+.microsoft-excel-container .confirmation-dialog .confirm-button:hover {
+  background-color: #1a5e2c;
+}
+
+.microsoft-excel-container .confirmation-dialog .cancel-button {
+  background-color: #ff4c4c;
+}
+
+.microsoft-excel-container .confirmation-dialog .cancel-button:hover {
+  background-color: #cc0000;
+}
+
+.microsoft-excel-container .error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Media Queries pentru dispozitive mobile */
+@media (max-width: 768px) {
+  .microsoft-excel-container .button-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .microsoft-excel-container .activate-excel-button,
+  .microsoft-excel-container .prev-sheet-button,
+  .microsoft-excel-container .next-sheet-button,
+  .microsoft-excel-container .add-sheet-button,
+  .microsoft-excel-container .save-excel-button,
+  .microsoft-excel-container .delete-sheet-button {
+    grid-column: 1 / -1;
+  }
+}

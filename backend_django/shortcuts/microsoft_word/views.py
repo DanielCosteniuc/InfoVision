@@ -26,7 +26,7 @@ def get_word_path():
 
 def is_word_running():
     try:
-        word_app = win32com.client.Dispatch("Word.Application")
+        word_app = win32com.client.GetActiveObject("Word.Application")
         return True if word_app.Documents.Count > 0 else False
     except Exception as e:
         logger.info(f"Word is not running: {str(e)}")
@@ -91,6 +91,7 @@ def maximize_window_if_not_maximized(hwnd):
 
 @csrf_exempt
 def open_word(request):
+    
     try:
         logger.info("Received request to open Microsoft Word")
         
@@ -519,8 +520,7 @@ def close_word(request):
 def list_open_word_files(request):
     try:
         pythoncom.CoInitialize()  # Inițializează COM pentru interacțiunea cu Word
-        word_app = win32com.client.Dispatch("Word.Application")
-        
+        word_app = win32com.client.GetActiveObject("Word.Application")
         if word_app.Documents.Count == 0:
             return JsonResponse({'success': True, 'files': []})
 
@@ -544,7 +544,7 @@ def activate_word_file(request):
 
     try:
         pythoncom.CoInitialize()
-        word_app = win32com.client.Dispatch("Word.Application")
+        word_app = win32com.client.GetActiveObject("Word.Application")
 
         # Verificăm toate documentele deschise și activăm cel cu calea potrivită
         for doc in word_app.Documents:
@@ -559,3 +559,56 @@ def activate_word_file(request):
     
     finally:
         pythoncom.CoUninitialize()
+
+@csrf_exempt
+def list_open_word_files(request):
+    """
+    Returnează o listă de documente Word deschise cu numele și calea completă.
+    """
+    try:
+        pythoncom.CoInitialize()  # Inițializează COM pentru interacțiunea cu Word
+        word_app = win32com.client.GetActiveObject("Word.Application")
+        
+        # Verifică dacă există documente deschise
+        if word_app.Documents.Count == 0:
+            return JsonResponse({'success': True, 'files': []})
+
+        # Obținem lista de fișiere deschise
+        open_files = [{'name': doc.Name, 'path': doc.FullName} for doc in word_app.Documents]
+        
+        return JsonResponse({'success': True, 'files': open_files}, status=200)
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+    finally:
+        pythoncom.CoUninitialize()  # Dezactivează COM
+        
+@csrf_exempt
+def activate_word_file(request):
+    """
+    Activează un document Word deschis, identificat prin calea completă.
+    """
+    file_path = request.GET.get('filePath')
+
+    if not file_path:
+        return JsonResponse({'success': False, 'message': 'No file path provided.'}, status=400)
+
+    try:
+        pythoncom.CoInitialize()  # Inițializează COM
+        word_app = win32com.client.GetActiveObject("Word.Application")
+
+        # Căutăm documentul deschis cu calea specificată și îl activăm
+        for doc in word_app.Documents:
+            if doc.FullName == file_path:
+                doc.Activate()  # Activăm documentul
+                return JsonResponse({'success': True, 'message': f'{doc.Name} activated.'}, status=200)
+
+        return JsonResponse({'success': False, 'message': 'Document not found.'}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+    finally:
+        pythoncom.CoUninitialize()  # Dezactivează COM
+

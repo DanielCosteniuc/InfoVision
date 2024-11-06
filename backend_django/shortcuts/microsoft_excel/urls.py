@@ -15,4 +15,6 @@ urlpatterns = [
     path('scroll-down/', views.scroll_down, name='scroll_down'),  
     path('scroll-left/', views.scroll_left, name='scroll_left'),
     path('scroll-right/', views.scroll_right, name='scroll_right'),
+    path('list_open_excel_files/', views.list_open_excel_files, name='list_open_excel_files'),
+    path('activate_excel_file/', views.activate_excel_file, name='activate_excel_file'),
 ]

@@ -12,4 +12,7 @@ urlpatterns = [
     path('read-mode-pdf/', views.read_mode, name='read_mode_pdf'),
     path('print-pdf/', views.print_pdf, name='print_pdf'),
     path('close-acrobat/', views.close_acrobat, name='close_acrobat'),
+    path('switch_to_next_tab/', views.switch_to_next_tab, name='switch_to_next_tab'),
+    path('switch_to_previous_tab/', views.switch_to_previous_tab, name='switch_to_previous_tab'),
+
 ]

@@ -13,6 +13,8 @@ import winreg
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+import pyautogui
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -263,4 +265,25 @@ def close_acrobat(request):
 
     except Exception as e:
         logger.error(f"Excepție la închiderea Adobe Acrobat: {str(e)}")
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+    
+@csrf_exempt
+def switch_to_next_tab(request):
+    """Schimbă la următorul tab deschis în Adobe Acrobat."""
+    try:
+        pyautogui.hotkey('ctrl', 'tab')
+        time.sleep(0.1)  # Mică întârziere pentru a permite comutarea
+        return JsonResponse({'success': True, 'message': 'Switched to next tab.'}, status=200)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+@csrf_exempt
+def switch_to_previous_tab(request):
+    """Schimbă la tab-ul anterior deschis în Adobe Acrobat."""
+    try:
+        pyautogui.hotkey('ctrl', 'shift', 'tab')
+        time.sleep(0.1)  # Mică întârziere pentru a permite comutarea
+        return JsonResponse({'success': True, 'message': 'Switched to previous tab.'}, status=200)
+    except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=500)

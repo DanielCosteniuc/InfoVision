@@ -19,10 +19,14 @@ import '../assets/styles/Sidebar.css';
 
 const Sidebar = () => {
   const [backendUrl, setBackendUrl] = useState('');
-  const [serverInfo, setServerInfo] = useState({ ip: '', port: '' });
+  const [openWordDocs, setOpenWordDocs] = useState([]); 
+  const [openExcelDocs, setOpenExcelDocs] = useState([]); 
+  const [openPowerPointDocs, setOpenPowerPointDocs] = useState([]); 
 
   useEffect(() => {
     fetchBackendUrl();
+    const interval = setInterval(fetchAllOpenDocs, 5000); 
+    return () => clearInterval(interval);
   }, []);
 
   const fetchBackendUrl = async () => {
@@ -31,88 +35,62 @@ const Sidebar = () => {
       const { ip, port } = response.data;
       const url = `http://${ip}:${port}`;
       setBackendUrl(url);
-      setServerInfo({ ip, port });
     } catch (error) {
-      console.error('There was an error fetching the backend URL!', error);
+      console.error('Error fetching the backend URL!', error);
     }
   };
 
-  // Funcții pentru deschiderea aplicațiilor locale
-  const openTeams = () => {
-    axios.post(`${backendUrl}/shortcuts/teams/open-teams/`)
-      .then(response => {
-        console.log(response.data.message || 'Microsoft Teams opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening Microsoft Teams!', error);
-      });
+  const fetchAllOpenDocs = () => {
+    const apps = [
+      { appName: 'word', setter: setOpenWordDocs },
+      { appName: 'excel', setter: setOpenExcelDocs },
+      { appName: 'powerpoint', setter: setOpenPowerPointDocs }
+    ];
+
+    apps.forEach(({ appName, setter }) => {
+      fetchOpenDocs(appName, setter);
+    });
   };
 
-  const openWord = () => {
-    axios.post(`${backendUrl}/shortcuts/word/open-word/`)
-      .then(response => {
-        console.log(response.data.message || 'Microsoft Word opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening Microsoft Word!', error);
-      });
+  const fetchOpenDocs = async (appName, setDocs) => {
+    try {
+      const response = await axios.get(`/shortcuts/file-explorer/list_open_files/${appName}/`);
+      if (response.data.success) {
+        console.log(`Fetched ${appName} docs:`, response.data.files); 
+        setDocs(response.data.files);
+      }
+    } catch (error) {
+      console.error(`Error fetching open ${appName} documents:`, error);
+    }
   };
 
-  const openExcel = () => {
-    axios.post(`${backendUrl}/shortcuts/excel/open-excel/`)
-      .then(response => {
-        console.log(response.data.message || 'Microsoft Excel opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening Microsoft Excel!', error);
-      });
+  const activateDoc = async (appName, filePath, endpoint) => {
+    try {
+      console.log("Activating document:", filePath);
+      const response = await axios.get(endpoint, { params: { filePath } });
+      console.log("Server response:", response);  // Debug full response
+
+      if (response.data.success) {
+        console.log(response.data.message);
+      } else {
+        console.error(`Could not activate the ${appName} document:`, response.data.message);
+      }
+    } catch (error) {
+      console.error(`Error activating ${appName} document:`, error);
+    }
   };
 
-  const openPowerPoint = () => {
-    axios.post(`${backendUrl}/shortcuts/powerpoint/open-powerpoint/`)
-      .then(response => {
-        console.log(response.data.message || 'Microsoft PowerPoint opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening Microsoft PowerPoint!', error);
-      });
-  };
-
-  const openPdfReader = () => {
-    axios.post(`${backendUrl}/shortcuts/pdf/open-acrobat/`)
-      .then(response => {
-        console.log(response.data.message || 'PDF Reader opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening PDF Reader!', error);
-      });
-  };
-
-  const openChrome = () => {
-    axios.post(`${backendUrl}/shortcuts/chrome/open-chrome/`)
-      .then(response => {
-        console.log(response.data.message || 'Chrome opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening Chrome!', error);
-      });
-  };
-
-  const openWhatsApp = () => {
-    axios.post(`${backendUrl}/shortcuts/whatsapp/open-whatsapp/`)
-      .then(response => {
-        console.log(response.data.message || 'WhatsApp opened successfully');
-      })
-      .catch(error => {
-        console.error('There was an error opening WhatsApp!', error);
-      });
+  const openApp = (appName) => {
+    axios.post(`${backendUrl}/shortcuts/${appName}/open-${appName}/`)
+      .then(response => console.log(response.data.message || `${appName} opened successfully`))
+      .catch(error => console.error(`Error opening ${appName}!`, error));
   };
 
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <img src={LogoIcon} alt="My Shortcuts Logo" className="logo-icon" />
-        <h2 className="sidebar-title">InfoVision SDG</h2>
+        <h2 className="sidebar-title">My Shortcuts</h2>
       </div>
 
       {/* Link și butoane pentru deschiderea aplicațiilor */}
@@ -122,49 +100,75 @@ const Sidebar = () => {
         File Explorer
       </Link>
 
-      <Link to="/shortcuts/word" className="sidebar-button" onClick={openWord}>
-        <img src={WordIcon} alt="Microsoft Word" className="icon" />
-        Microsoft Word
-      </Link>
-
-      <Link to="/shortcuts/excel" className="sidebar-button" onClick={openExcel}>
-        <img src={ExcelIcon} alt="Microsoft Excel" className="icon" />
-        Microsoft Excel
-      </Link>
-
-      <Link to="/shortcuts/powerpoint" className="sidebar-button" onClick={openPowerPoint}>
-        <img src={PowerPointIcon} alt="PowerPoint" className="icon" />
-        PowerPoint
-      </Link>
-
-      <Link to="/shortcuts/pdf" className="sidebar-button" onClick={openPdfReader}>
-        <img src={PdfIcon} alt="PDF Reader" className="icon" />
-        PDF Reader
-      </Link>
-
-      <Link to="/shortcuts/chrome" className="sidebar-button" onClick={openChrome}>
-        <img src={ChromeIcon} alt="Chrome" className="icon" />
-        Chrome
-      </Link>
-
-      <Link to="/shortcuts/whatsapp" className="sidebar-button" onClick={openWhatsApp}>
-        <img src={WhatsappIcon} alt="WhatsApp" className="icon" />
-        WhatsApp
-      </Link>
-
-      <Link to="/shortcuts/teams" className="sidebar-button" onClick={openTeams}>
+      <Link to="/shortcuts/teams" className="sidebar-button" onClick={() => openApp('teams')}>
         <img src={TeamsIcon} alt="Microsoft Teams" className="icon" />
         Microsoft Teams
-      </Link>
-
-      <Link to="/shortcuts/zoom" className="sidebar-button">
-        <img src={ZoomIcon} alt="Zoom" className="icon" />
-        Zoom
       </Link>
 
       <Link to="/shortcuts/skype" className="sidebar-button">
         <img src={SkypeIcon} alt="Skype" className="icon" />
         Skype
+      </Link>
+
+      {/* Word Section */}
+      <Link to="/shortcuts/word" className="sidebar-button" onClick={() => openApp('word')}>
+        <img src={WordIcon} alt="Microsoft Word" className="icon" />
+        Microsoft Word
+      </Link>
+      <div className="open-docs">
+        {openWordDocs.map((doc, index) => (
+          <button
+            key={index}
+            onClick={() => activateDoc('word', doc.path, '/shortcuts/word/activate_word_file')}
+            className="open-doc-button"
+          >
+            {doc.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Excel Section */}
+      <Link to="/shortcuts/excel" className="sidebar-button" onClick={() => openApp('excel')}>
+        <img src={ExcelIcon} alt="Microsoft Excel" className="icon" />
+        Microsoft Excel
+      </Link>
+      <div className="open-docs">
+        {openExcelDocs.map((doc, index) => (
+          <button
+            key={index}
+            onClick={() => activateDoc('excel', doc.path, '/shortcuts/excel/activate_excel_file')}
+            className="open-doc-button"
+          >
+            {doc.name}
+          </button>
+        ))}
+      </div>
+
+      {/* PowerPoint Section */}
+      <Link to="/shortcuts/powerpoint" className="sidebar-button" onClick={() => openApp('powerpoint')}>
+        <img src={PowerPointIcon} alt="PowerPoint" className="icon" />
+        PowerPoint
+      </Link>
+      <div className="open-docs">
+        {openPowerPointDocs.map((doc, index) => (
+          <button
+            key={index}
+            onClick={() => activateDoc('powerpoint', doc.path, '/shortcuts/powerpoint/activate_powerpoint_file')}
+            className="open-doc-button"
+          >
+            {doc.name}
+          </button>
+        ))}
+      </div>
+
+      <Link to="/shortcuts/pdf" className="sidebar-button" onClick={() => openApp('pdf')}>
+        <img src={PdfIcon} alt="PDF Reader" className="icon" />
+        PDF Reader
+      </Link>
+
+      <Link to="/shortcuts/chrome" className="sidebar-button" onClick={() => openApp('chrome')}>
+        <img src={ChromeIcon} alt="Chrome" className="icon" />
+        Chrome
       </Link>
 
       <Link to="/shortcuts/keyboard_mouse" className="sidebar-button">
@@ -173,7 +177,7 @@ const Sidebar = () => {
       </Link>
 
       <div className="copyright">
-        &copy; 2024-SDG
+        &copy; 2024-Costeniuc Daniel
       </div>
 
       

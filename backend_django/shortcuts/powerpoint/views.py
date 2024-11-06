@@ -23,7 +23,7 @@ def maximize_window_if_not_maximized(hwnd):
         
 def is_powerpoint_running():
     try:
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         return True if powerpoint_app.Presentations.Count > 0 else False
     except Exception as e:
         logger.info(f"PowerPoint is not running: {str(e)}")
@@ -31,7 +31,7 @@ def is_powerpoint_running():
 
 def check_powerpoint_open():
     try:
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentations = powerpoint_app.Presentations
         return presentations.Count > 0
     except:
@@ -121,7 +121,7 @@ def add_slide(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         slides = presentation.Slides
         slides.Add(slides.Count + 1, 1)
@@ -139,7 +139,7 @@ def save_presentation(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         presentation.Save()
 
@@ -156,7 +156,7 @@ def delete_slide(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         slides = presentation.Slides
         if slides.Count > 0:
@@ -175,7 +175,7 @@ def start_presentation(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         presentation.SlideShowSettings.Run()
 
@@ -192,7 +192,7 @@ def next_slide(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         presentation.SlideShowWindow.View.Next()
 
@@ -209,7 +209,7 @@ def previous_slide(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         presentation.SlideShowWindow.View.Previous()
 
@@ -253,7 +253,7 @@ def stop_presentation(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         presentation.SlideShowWindow.View.Exit()
 
@@ -271,7 +271,7 @@ def go_to_first_slide(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         presentation.Slides(1).Select()
 
@@ -289,7 +289,7 @@ def go_to_last_slide(request):
         if not check_powerpoint_open():
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         presentation = powerpoint_app.ActivePresentation
         slide_count = presentation.Slides.Count
         presentation.Slides(slide_count).Select()
@@ -310,7 +310,7 @@ def activate_powerpoint(request):
             logger.info("Nici o prezentare PowerPoint deschisă")
             return JsonResponse({'success': False, 'message': 'Nici o prezentare PowerPoint deschisă'}, status=404)
 
-        powerpoint_app = win32com.client.Dispatch("PowerPoint.Application")
+        powerpoint_app = win32com.client.GetActiveObject("PowerPoint.Application")
         powerpoint_app.Visible = True
         logger.info("PowerPoint application instance created and made visible")
 
@@ -363,3 +363,55 @@ def close_powerpoint(request):
     except Exception as e:
         logger.error(f"Exception while closing Microsoft PowerPoint: {str(e)}")
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+@csrf_exempt
+def list_open_powerpoint_files(request):
+    """
+    Returnează o listă de prezentări PowerPoint deschise cu numele și calea completă.
+    """
+    try:
+        pythoncom.CoInitialize()  # Inițializează COM pentru interacțiunea cu PowerPoint
+        ppt_app = win32com.client.GetActiveObject("PowerPoint.Application")
+        
+        # Verificăm dacă există prezentări deschise
+        if ppt_app.Presentations.Count == 0:
+            return JsonResponse({'success': True, 'files': []})
+
+        # Obținem lista de prezentări deschise
+        open_files = [{'name': pres.Name, 'path': pres.FullName} for pres in ppt_app.Presentations]
+        
+        return JsonResponse({'success': True, 'files': open_files}, status=200)
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+    finally:
+        pythoncom.CoUninitialize()  # Dezactivează COM
+
+@csrf_exempt
+def activate_powerpoint_file(request):
+    """
+    Activează o prezentare PowerPoint deschisă, identificată prin calea completă.
+    """
+    file_path = request.GET.get('filePath')
+
+    if not file_path:
+        return JsonResponse({'success': False, 'message': 'No file path provided.'}, status=400)
+
+    try:
+        pythoncom.CoInitialize()  # Inițializează COM
+        ppt_app = win32com.client.GetActiveObject("PowerPoint.Application")
+
+        # Căutăm prezentarea deschisă cu calea specificată și o activăm
+        for pres in ppt_app.Presentations:
+            if pres.FullName == file_path:
+                pres.Windows(1).Activate()  # Activăm prezentarea
+                return JsonResponse({'success': True, 'message': f'{pres.Name} activated.'}, status=200)
+
+        return JsonResponse({'success': False, 'message': 'Presentation not found.'}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+    finally:
+        pythoncom.CoUninitialize()  # Dezactivează COM

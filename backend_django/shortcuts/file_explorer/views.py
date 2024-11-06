@@ -5,7 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 import urllib.parse
 from django.conf import settings
 from pathlib import Path
-
+import pythoncom
+import win32com
+import xlwings as xw
 # Lista de restrictii
 RESTRICTED_PATHS = [
     r'C:\Windows',
@@ -98,3 +100,49 @@ def server_action(request):
             return JsonResponse({'success': False, 'message': 'File type not allowed.'}, status=403)
     else:
         return JsonResponse({'success': False, 'message': 'File not found.'}, status=404)
+
+import logging
+logger = logging.getLogger(__name__)
+
+@csrf_exempt
+def list_open_files(request, app_type):
+    """
+    Returnează o listă de fișiere deschise pentru aplicația specificată (Word, Excel, PowerPoint).
+    """
+    try:
+        pythoncom.CoInitialize()
+        #logger.info(f"Received request to list open files for app type: {app_type}")
+        
+        if app_type == 'word':
+            app = win32com.client.Dispatch("Word.Application")
+            open_files = [{'name': doc.Name, 'path': doc.FullName} for doc in app.Documents] if app.Documents.Count > 0 else []
+
+        elif app_type == 'excel':
+            if xw.apps.count == 0:
+                return JsonResponse({'success': True, 'files': []}, status=200)
+
+            app = xw.apps.active
+
+            open_files = [{'name': wb.name, 'path': wb.fullname} for wb in app.books if wb.fullname and wb.fullname.endswith('.xlsx')]
+            logger.info(f"Fișiere Excel deschise: {open_files}")
+
+            return JsonResponse({'success': True, 'files': open_files}, status=200)
+
+
+        elif app_type == 'powerpoint':
+            app = win32com.client.Dispatch("PowerPoint.Application")
+            open_files = [{'name': pres.Name, 'path': pres.FullName} for pres in app.Presentations] if app.Presentations.Count > 0 else []
+
+        else:
+            #logger.error("Invalid application type")
+            return JsonResponse({'success': False, 'message': 'Invalid application type'}, status=400)
+
+        #logger.info(f"Successfully retrieved open files for {app_type}: {open_files}")
+        return JsonResponse({'success': True, 'files': open_files}, status=200)
+
+    except Exception as e:
+        logger.error(f"Error listing open files for {app_type}: {str(e)}")
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+    finally:
+        pythoncom.CoUninitialize()

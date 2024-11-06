@@ -1,64 +1,101 @@
 /* Container de bază pentru componentă */
 .skype-container {
-  padding: 20px;
-  background-color: #f4f4f7;
-  width: 90%;
-  max-width: 1000px;
-  margin: 0 auto;
+  padding: 0px 20px 20px;
+  height: auto;
+  position: relative;
   border-radius: 8px;
+  width: 100%;
 }
+
+.skype-container .left,
+.skype-container .right {
+  width: 49%;
+}
+
+.skype-container .right .touchpad-container {
+  width: 100%;
+  height: 50vh;
+}
+
+
+.App.fullscreen .skype-container .right .touchpad-container {
+  height: 52vh;
+}
+
 
 /* Stil pentru titlul aplicației */
 .title {
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
-  color: #0078D7;
+  margin-top: 0px;
+  color: 0061ac;
+}
+
+.holder-skype {
+  display: flex;
+  justify-content: space-between !important;
 }
 
 /* Stil de bază pentru butoane */
 .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 15px;
-  font-size: 14px;
-  color: #fff;
-  background-color: #0078D7;
+  background: none;
   border: none;
-  border-radius: 5px;
+  color: #ffffff;
+  text-align: left;
+  padding: 10px 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 5px;
   width: 100%;
-  height: 100%;
+  border-radius: 5px;
+  transition: all 0.5s ease-out;
+  text-decoration: none;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.7);
+
+  height: 60px;
 }
 
-.button:hover {
-  background-color: #005a9e;
+.button svg {
+  margin-right: 10px;
 }
 
-/* Stil pentru butoanele active */
-.button.active {
-  background-color: #004080;
+.button-group.chats {
+  border:solid 1px rgba(255,255,255,0.4);
+  padding:5px;
+  border-radius:5px;
+  justify-content: space-between !important;
 }
 
 /* Container pentru prima linie de butoane */
 .button-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 coloane egale */
+  grid-template-columns: repeat(2, 1fr); /* 2 coloane egale */
+  gap: 17px;
+  margin: 20px 0px 10px;
+}
+.first-line {
+  display: flex;
+    gap: 10px;
+    margin-bottom:10px;
+}
+/* Container pentru a doua linie de butoane */
+.second-line {
   gap: 10px;
-  margin-bottom: 20px;
 }
 
 /* Container pentru grupuri de butoane din secțiunea "Chats" */
 .button-group.chats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Prima linie cu 4 coloane egale */
-  gap: 10px;
   margin-bottom: 20px;
 }
-
+.button-group-chats0,
+.button-group-chats1,
+.button-group-chats2 {
+  width: 100%;
+  display:flex;
+  gap:10px;
+}
 /* A doua linie din secțiunea "Chats" */
 .button-group.chats .second-row {
   display: grid;
@@ -66,35 +103,14 @@
   gap: 10px;
   margin-top: 10px;
 }
-.button-group.chats .video-call-button {
-  grid-column: 1 / 2; /* Începe la coloana 1 și se termină la coloana 2 */
-  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
+.button.contacts-button {
+  display:none;
 }
-.button-group.chats .audio-call-button {
-  grid-column: 2 / 3; /* Începe la coloana 1 și se termină la coloana 2 */
-  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
-}
-
-.button-group.chats .audio-call-button {
-  grid-column: 3 / 4; /* Începe la coloana 1 și se termină la coloana 2 */
-  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
-}
-.button-group.chats .audio-call-button {
-  grid-column: 4 / 5; /* Începe la coloana 1 și se termină la coloana 2 */
-  grid-row: 1 / 2; /* Începe la rândul 1 și se termină la rândul 2 */
-}
-
-
 /* Container pentru grupuri de butoane din secțiunea "Contacts" */
 .button-group.contacts {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4 coloane egale */
   gap: 10px;
-}
-
-/* Stiluri pentru fiecare buton din grilă */
-.button-group .button {
-  width: auto;
 }
 
 
@@ -104,4 +120,44 @@
   font-weight: bold;
   margin-top: 20px;
   text-align: center;
+}
+
+.button.answer-call-button,
+.button.video-call-button,
+.button.audio-call-button {
+  background-color: rgba(40, 167, 69, 0.7);
+  margin-bottom:10px;
+}
+
+.button.close-skype-button,
+.button.hang-up-button {
+  background-color: rgba(217, 48, 37, 0.7);
+}
+
+.button.chats-button,
+.button.open-skype-button,
+.button.next-conversation-button,
+.button.previous-conversation-button,
+.button.camera-button,
+.button.mute-button{
+  background-color: #0061ac;
+}
+
+.button.next-conversation-button svg{
+  transform: rotate(90deg);
+}
+.button.previous-conversation-button svg{
+  transform: rotate(90deg);
+}
+
+.App.fullscreen .skype-container .button-row {
+  margin:45px 0px 10px;
+}
+.App.fullscreen .skype-container .touchpad-container {
+  margin:45px 0px 10px;
+}
+
+.App.fullscreen .skype-container .keyboard-toggle.keyboard-open  {
+ left:75%;
+ bottom:0px;
 }

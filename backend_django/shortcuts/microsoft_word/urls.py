@@ -17,4 +17,7 @@ urlpatterns = [
     path('read-mode-previous-page/', views.read_mode_previous_page, name='read_mode_previous_page'),
     path('exit-read-mode/', views.exit_read_mode, name='exit_read_mode'),
     path('close-word/', views.close_word, name='close_word'),
+    path('list_open_word_files/', views.list_open_word_files, name='list_open_word_files'),
+    path('activate_word_file/', views.activate_word_file, name='activate_word_file'),
+    
 ]

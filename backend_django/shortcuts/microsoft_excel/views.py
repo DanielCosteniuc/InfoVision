@@ -10,7 +10,7 @@ import winreg
 import win32api
 import pyautogui
 import pygetwindow as gw
-
+import xlwings as xw
 import time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -74,213 +74,135 @@ def minimize_and_maximize_excel():
     
 @csrf_exempt
 def open_excel(request):
+    """
+    Deschide Excel sau activează o instanță existentă.
+    """
     try:
+        app = xw.apps.active
+        if app:
+            return JsonResponse({'success': True, 'message': 'Instanța activă de Excel este deja deschisă.'}, status=200)
 
-        if check_excel_open():
-            return activate_excel(request)
-
-        excel_exe_path = get_excel_path()
-        if excel_exe_path and os.path.exists(excel_exe_path):
-            result = subprocess.run(
-                [excel_exe_path],
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=True
-            )
-            return JsonResponse({'success': True, 'output': result.stdout.decode()})
-        else:
-            return JsonResponse({'success': False, 'message': 'Microsoft Excel executable not found.'}, status=404)
-    except subprocess.CalledProcessError as e:
-        return JsonResponse({'success': False, 'message': e.stderr.decode()}, status=500)
+        # Dacă nu există instanță activă, deschide Excel
+        app = xw.App(visible=True)
+        return JsonResponse({'success': True, 'message': 'Excel deschis cu succes.'}, status=200)
     except Exception as e:
+        logger.error(f'Eroare la deschiderea Excel: {e}')
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
-
-
 
 
 @csrf_exempt
 def add_sheet(request):
-    def try_add_sheet():
-        try:
-            pythoncom.CoInitialize()
-
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
-
-            excel_app = win32com.client.Dispatch("Excel.Application")
-            excel_app.Visible = True
-            time.sleep(0.5)
-
-            workbook = excel_app.ActiveWorkbook
-            workbook.Sheets.Add()
-
-            return JsonResponse({'success': True, 'message': 'Foaia nouă a fost adăugată cu succes.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_add_sheet()
-
-    if response.status_code != 200 :
-        pyautogui.press('enter')
-        time.sleep(0.5) 
-        response = try_add_sheet()
-
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_add_sheet()
-    return response
+    """
+    Adaugă o foaie nouă în workbook-ul activ.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
+        
+        workbook = app.books.active
+        workbook.sheets.add()
+        
+        return JsonResponse({'success': True, 'message': 'Foaie nouă adăugată cu succes.'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la adăugarea foii: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
 @csrf_exempt
 def next_sheet(request):
-    
-    def try_next_sheet():
-        try:
-            pythoncom.CoInitialize()
+    """
+    Trecerea la foaia următoare din workbook-ul activ.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
+        
+        workbook = app.books.active
+        sheet = workbook.sheets.active
+        current_index = sheet.index
 
-            excel_app = win32com.client.Dispatch("Excel.Application")
-            if not excel_app.Workbooks.Count:
-                return JsonResponse({'success': False, 'message': 'No workbooks are open'}, status=404)
-
-            workbook = excel_app.ActiveWorkbook
-            current_sheet = excel_app.ActiveSheet
-            sheets = workbook.Sheets
-            current_index = current_sheet.Index
-
-            if current_index < sheets.Count:
-                sheets(current_index + 1).Activate()
-                return JsonResponse({'success': True, 'message': 'Moved to the next sheet.'}, status=200)
-            else:
-                return JsonResponse({'success': False, 'message': 'Already on the last sheet.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_next_sheet()
-
-    if response.status_code != 200:
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        response = try_next_sheet()
-
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_next_sheet()
-
-    return response
-
-
+        if current_index < len(workbook.sheets) :
+            next_sheet = workbook.sheets[current_index ]
+            next_sheet.activate()
+            return JsonResponse({'success': True, 'message': f'Trecut la următorul sheet: {next_sheet.name}'}, status=200)
+        else:
+            return JsonResponse({'success': False, 'message': 'Deja pe ultimul sheet.'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la schimbarea foii: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 @csrf_exempt
 def prev_sheet(request):
-    def try_prev_sheet():
-        try:
-            pythoncom.CoInitialize()
+    """
+    Trecerea la foaia anterioară din workbook-ul activ.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
 
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
+        workbook = app.books.active
+        sheet = workbook.sheets.active
+        current_index = sheet.index
+        if current_index > 1:
+            prev_sheet = workbook.sheets[current_index - 2]
+            prev_sheet.activate()
+            return JsonResponse({'success': True, 'message': f'Trecut la foaia anterioară: {prev_sheet.name}'}, status=200)
+        else:
+            return JsonResponse({'success': False, 'message': 'Deja pe prima foaie.'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la trecerea la foaia anterioară: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
-            excel_app = win32com.client.Dispatch("Excel.Application")
-            workbook = excel_app.ActiveWorkbook
-            current_sheet = excel_app.ActiveSheet
-            sheets = workbook.Sheets
-            current_index = current_sheet.Index
-
-            if current_index > 1:
-                sheets(current_index - 1).Activate()
-                return JsonResponse({'success': True, 'message': 'Moved to the previous sheet.'}, status=200)
-            else:
-                return JsonResponse({'success': False, 'message': 'Already on the first sheet.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_prev_sheet()
-
-    if response.status_code != 200 :
-        pyautogui.press('enter')
-        time.sleep(0.5) 
-        response = try_prev_sheet()
-    
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_prev_sheet()
-
-    return response
 
 @csrf_exempt
 def delete_active_sheet(request):
-    def try_delete_sheet():
-        try:
-            pythoncom.CoInitialize()
-
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
-
-            excel_app = win32com.client.Dispatch("Excel.Application")
-            excel_app.Visible = True
-            time.sleep(0.5)
-
-            active_sheet = excel_app.ActiveSheet
-            sheet_name = active_sheet.Name
-            active_sheet.Delete()
-
-            return JsonResponse({'success': True, 'message': f'Sheet {sheet_name} deleted successfully.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_delete_sheet()
-
-    if response.status_code != 200 :
-        pyautogui.press('enter')
-        time.sleep(0.5) 
-        response = try_delete_sheet()
+    """
+    Șterge foaia activă din workbook-ul deschis.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            logger.error("Nicio instanță activă de Excel. Deschideți Excel și încercați din nou.")
+            return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
         
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_delete_sheet()
-
-    return response
-
+        workbook = app.books.active
+        active_sheet = workbook.sheets.active
+        sheet_name = active_sheet.name
+        
+        # Verificăm dacă este ultima foaie din workbook
+        if len(workbook.sheets) <= 1:
+            logger.warning("Nu se poate șterge ultima foaie.")
+            return JsonResponse({'success': False, 'message': 'Nu se poate șterge ultima foaie din document.'}, status=400)
+        
+        # Ștergem foaia activă
+        active_sheet.delete()
+        logger.info(f"Foaia {sheet_name} a fost ștearsă cu succes.")
+        
+        return JsonResponse({'success': True, 'message': f'Sheet {sheet_name} deleted successfully.'}, status=200)
+    except Exception as e:
+        logger.error(f"Eroare la ștergerea foii active: {e}")
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 @csrf_exempt
 def save_excel(request):
-    def try_save_excel():
-        try:
-            pythoncom.CoInitialize()
-
-            excel_app = win32com.client.Dispatch("Excel.Application")
-            if excel_app.Workbooks.Count == 0:
-                return JsonResponse({'success': False, 'message': 'Niciun fișier Excel deschis'}, status=40)
-
-            workbook = excel_app.ActiveWorkbook
-            workbook.Save()
-
-            return JsonResponse({'success': True, 'message': 'Fișier Excel salvat cu succes.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_save_excel()
-    
-    if response.status_code != 200  :
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        response = try_save_excel()
+    """
+    Salvează workbook-ul activ.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
         
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_save_sheet()
-
-    return response
+        workbook = app.books.active
+        workbook.save()
+        
+        return JsonResponse({'success': True, 'message': 'Fișier Excel salvat cu succes.'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la salvarea fișierului: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
 @csrf_exempt
@@ -293,7 +215,7 @@ def activate_excel(request):
             logger.info("Nici un document Excel deschis")
             return JsonResponse({'success': False, 'message': 'Nici un document Excel deschis'}, status=404)
 
-        excel_app = win32com.client.Dispatch("Excel.Application")
+        excel_app = win32com.client.GetActiveObject("Excel.Application")
         excel_app.Visible = True
         logger.info("Excel application instance created and made visible")
 
@@ -349,131 +271,139 @@ def activate_excel(request):
 
 
 @csrf_exempt
-def close_excel_window(request):
-    try:
-        subprocess.run(["taskkill", "/F", "/IM", "EXCEL.EXE"], check=True)
-        
-        return JsonResponse({'success': True, 'message': 'Excel closed successfully.'}, status=200)
-    except subprocess.CalledProcessError as e:
-        return JsonResponse({'success': False, 'message': 'Failed to close Excel.'}, status=500)
 
+def close_excel_window(request):
+    """
+    Închide instanța activă de Excel.
+    """
+    try:
+        # Verificăm dacă există o instanță activă de Excel
+        if xw.apps.count == 0:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
+
+        # Accesăm și închidem instanța activă de Excel
+        app = xw.apps.active
+        app.quit()
+        logger.info("Instanța Excel a fost închisă cu succes.")
+        
+        return JsonResponse({'success': True, 'message': 'Excel a fost închis cu succes.'}, status=200)
+
+    except Exception as e:
+        logger.error(f"Eroare la închiderea Excel: {str(e)}")
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
 @csrf_exempt
 def scroll_up(request):
-    def try_scroll_up():
-        try:
-            pythoncom.CoInitialize()
+    """
+    Face scroll în sus în Excel.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
 
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
-
-            pyautogui.scroll(500)  
-            return JsonResponse({'success': True, 'message': 'Scrolled up'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_scroll_up()
-
-    if response.status_code != 200:
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        response = try_scroll_up()
-
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_scroll_up()
-
-    return response
-
+        pyautogui.scroll(500)  
+        return JsonResponse({'success': True, 'message': 'Scrolled up'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la scroll up: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 @csrf_exempt
 def scroll_down(request):
-    def try_scroll_down():
-        try:
-            pythoncom.CoInitialize()
+    """
+    Face scroll în jos în Excel.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
 
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
-
-            pyautogui.scroll(-500)  
-            return JsonResponse({'success': True, 'message': 'Scrolled down'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_scroll_down()
-
-    if response.status_code != 200:
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        response = try_scroll_down()
-
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_scroll_down()
-
-    return response
-
+        pyautogui.scroll(-500)  
+        return JsonResponse({'success': True, 'message': 'Scrolled down'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la scroll down: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 @csrf_exempt
 def scroll_left(request):
-    def try_scroll_left():
-        try:
-            pythoncom.CoInitialize()
-
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
-            for i in range(5):
-                pyautogui.press('left') 
-            return JsonResponse({'success': True, 'message': 'Scrolled left successfully.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
-
-    response = try_scroll_left()
-
-    if response.status_code != 200:
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        response = try_scroll_left()
-
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_scroll_left()
-
-    return response
-
+    """
+    Face scroll la stânga în Excel.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
+        for _ in range(5):
+            pyautogui.press('left') 
+        return JsonResponse({'success': True, 'message': 'Scrolled left'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la scroll left: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 @csrf_exempt
 def scroll_right(request):
-    def try_scroll_right():
-        try:
-            pythoncom.CoInitialize()
+    """
+    Face scroll la dreapta în Excel.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
+        for _ in range(5):
+            pyautogui.press('right')  
+        return JsonResponse({'success': True, 'message': 'Scrolled right'}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la scroll right: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    
+    
+@csrf_exempt
+def list_open_excel_files(request):
+    """
+    Returnează o listă de documente Excel deschise cu numele și calea completă.
+    """
+    try:
+        app = xw.apps.active
+        if app is None:
+            return JsonResponse({'success': False, 'message': 'Nicio instanță activă de Excel.'}, status=404)
 
-            if not check_excel_open():
-                return JsonResponse({'success': False, 'message': 'Niciun document Excel deschis'}, status=404)
-            for i in range(5):
-                pyautogui.press('right')  
-            return JsonResponse({'success': True, 'message': 'Scrolled right successfully.'}, status=200)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-        finally:
-            pythoncom.CoUninitialize()
+        open_files = [{'name': wb.name, 'path': wb.fullname} for wb in app.books]
+        return JsonResponse({'success': True, 'files': open_files}, status=200)
+    except Exception as e:
+        logger.error(f'Eroare la listarea fișierelor: {e}')
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
-    response = try_scroll_right()
 
-    if response.status_code != 200:
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        response = try_scroll_right()
+@csrf_exempt
+def activate_excel_file(request):
+    file_path = request.GET.get('filePath')
 
-    if response.status_code != 200:
-        minimize_and_maximize_excel()
-        response = try_scroll_right()
+    if not file_path:
+        return JsonResponse({'success': False, 'message': 'No file path provided.'}, status=400)
 
-    return response
+    try:
+        # Accesăm instanța activă a aplicației Excel
+        excel_app = xw.apps.active
+        if not excel_app:
+            return JsonResponse({'success': False, 'message': 'No active Excel instance found.'}, status=404)
+        
+        found = False
+        for wb in excel_app.books:
+            if wb.fullname == file_path:
+                found = True
+                wb.activate()  # Activăm workbook-ul dorit
+
+                # Maximizăm fereastra Excel dacă nu este deja maximizată
+                excel_app.api.WindowState = xw.constants.WindowState.xlMaximized
+
+                break  # Oprim căutarea după ce am găsit și activat workbook-ul
+
+        if not found:
+            return JsonResponse({'success': False, 'message': 'Document not found.'}, status=404)
+
+        return JsonResponse({'success': True, 'message': f'{file_path} activated and maximized if not already.'}, status=200)
+
+    except Exception as e:
+        logger.error(f"Eroare la activarea fișierului Excel: {str(e)}")
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)

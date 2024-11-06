@@ -16,4 +16,6 @@ urlpatterns = [
     path('go-to-last-slide/', views.go_to_last_slide, name='go_to_last_slide'),
     path('activate-powerpoint/', views.activate_powerpoint, name='activate_powerpoint'),
     path('close-powerpoint/', views.close_powerpoint, name='close_powerpoint'),
+     path('list_open_powerpoint_files/', views.list_open_powerpoint_files, name='list_open_powerpoint_files'),
+    path('activate_powerpoint_file/', views.activate_powerpoint_file, name='activate_powerpoint_file'),
 ]

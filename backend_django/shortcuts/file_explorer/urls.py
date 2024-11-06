@@ -9,4 +9,6 @@ urlpatterns = [
     path('list/', views.list_files, name='list_files'),
     path('download/', views.download_file, name='download_file'),
     path('server-action/', views.server_action, name='server_action'),
+    #path('list_open_files/', views.list_open_files, name='list_open_files'),
+    path('list_open_files/<str:app_type>/', views.list_open_files, name='list_open_files'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

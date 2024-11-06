@@ -19,6 +19,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PhoneCallbackIcon from '@mui/icons-material/PhoneCallback'; // Icon pentru răspuns la apel
+import Keyboard_mouse from './Keyboard_mouse'; // Import Keyboard_mouse component
 
 const Skype = ({ onClose }) => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -72,54 +73,69 @@ const Skype = ({ onClose }) => {
 
   return (
     <div className="skype-container">
+      
       <h1 className="title">Skype</h1>
-
+      <div className="holder-skype">
+      <div className="left">
       {/* Prima linie de butoane */}
       <div className="button-row">
-        <button onClick={() => handleSkypeAction('open-skype')} className="button open-skype-button">
-          <OpenInBrowserIcon /> Adu în față
-        </button>
-        <button onClick={confirmCloseSkype} className="button close-skype-button">
-          <CloseIcon /> Închide Skype
-        </button>
-        <button onClick={answerCall} className="button answer-call-button">
-          <PhoneCallbackIcon /> Răspunde la apel
-        </button>
-        <button onClick={() => toggleSection('chats')} className={`button chats-button ${activeSection === 'chats' ? 'active' : ''}`}>
-          <ChatIcon /> Chats
-        </button>
-        <button onClick={() => toggleSection('contacts')} className={`button contacts-button ${activeSection === 'contacts' ? 'active' : ''}`}>
-          <ContactsIcon /> Contacts
-        </button>
+        <div className="first-line">
+          <button onClick={() => handleSkypeAction('open-skype')} className="button open-skype-button">
+            <OpenInBrowserIcon /> Adu în față
+          </button>
+          <button onClick={confirmCloseSkype} className="button close-skype-button">
+            <CloseIcon /> Închide Skype
+          </button>
+          </div>
+          <div className="second-line">
+            <button onClick={answerCall} className="button answer-call-button">
+              <PhoneCallbackIcon /> Răspunde la apel
+            </button>
+          
+            <button onClick={() => toggleSection('chats')} className={`button chats-button ${activeSection === 'chats' ? 'active' : ''}`}>
+              <ChatIcon /> Chats
+            </button>
+            <button onClick={() => toggleSection('contacts')} className={`button contacts-button ${activeSection === 'contacts' ? 'active' : ''}`}>
+              <ContactsIcon /> Contacts
+            </button>
+            </div>
       </div>
-
       {/* Afișează butoanele pentru secțiunea Chats */}
       {activeSection === 'chats' && (
         <div className="button-group chats">
-          <button onClick={() => handleSkypeAction('previous-conversation')} className="button previous-conversation-button">
-            <ArrowBackIcon /> Previous Conversation
-          </button>
+          <div className="button-group-chats0">
           <button onClick={() => handleSkypeAction('next-conversation')} className="button next-conversation-button">
-            <ArrowForwardIcon /> Next Conversation
+            <ArrowForwardIcon /> Următorul chat
           </button>
-          <button onClick={toggleMute} className="button mute-button">
-            {isMuted ? <MicOffIcon /> : <MicIcon />} {isMuted ? 'Unmute' : 'Mute'}
+          <button onClick={() => handleSkypeAction('previous-conversation')} className="button previous-conversation-button">
+            <ArrowBackIcon /> Chat-ul anterior
           </button>
-          <button onClick={toggleCamera} className="button camera-button">
-            {isCameraOn ? <VideocamIcon /> : <VideocamOffIcon />} {isCameraOn ? 'Turn Off Camera' : 'Turn On Camera'}
-          </button>
-          
-          
-          
+         
+          </div>
+
+          <div className="button-group-chats1">
           <button onClick={() => handleSkypeAction('start-video-call')} className="button video-call-button">
-            <VideoCallIcon /> Video Call
+            <VideoCallIcon />Apel video 
           </button>
           <button onClick={() => handleSkypeAction('start-audio-call')} className="button audio-call-button">
-            <PhoneIcon /> Audio Call
+            <PhoneIcon /> Apel audio
           </button>
-          <button onClick={() => handleSkypeAction('hang-up')} className="button hang-up-button">
-            <PhoneDisabledIcon /> Hang Up
-          </button>
+
+          </div>
+              
+          <div className="button-group-chats2">
+              <button onClick={toggleCamera} className="button camera-button">
+                {isCameraOn ? <VideocamIcon /> : <VideocamOffIcon />} {isCameraOn ? 'Camera' : 'Camera'}
+              </button>
+              <button onClick={() => handleSkypeAction('hang-up')} className="button hang-up-button">
+                <PhoneDisabledIcon /> Închide apelul
+              </button>
+              <button onClick={toggleMute} className="button mute-button">
+                    {isMuted ? <MicOffIcon /> : <MicIcon />} {isMuted ? 'Microfon' : 'Microfon'}
+                  </button>
+              </div>
+        
+          
         </div>
       )}
 
@@ -161,7 +177,17 @@ const Skype = ({ onClose }) => {
           {errorMessage}
         </div>
       )}
+
+      </div>
+      <div className="right">
+      <Keyboard_mouse />
+      </div>
+      </div>
     </div>
+  
+ 
+    
+    
   );
 };
 
